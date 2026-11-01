@@ -179,12 +179,12 @@
     <div class="hero-video-container" id="heroContainer">
         <div class="hero-click-overlay" id="heroOverlay" title="Clicca per attivare l'audio"></div>
         <button class="hero-sound-btn" id="heroSoundBtn" type="button" aria-label="Attiva o disattiva audio" title="Attiva audio">
-            <svg class="icon-sound-off"><use href="#sound-off-icon"></use></svg>
-            <svg class="icon-sound-on"><use href="#sound-on-icon"></use></svg>
+            <svg aria-hidden="true" class="icon-sound-off"><use href="#sound-off-icon"></use></svg>
+            <svg aria-hidden="true" class="icon-sound-on"><use href="#sound-on-icon"></use></svg>
         </button>
         <iframe
             id="heroIframe"
-            src="https://www.youtube.com/embed/4aja6p8wSnA?enablejsapi=1&autoplay=1&mute=1&controls=1&loop=1&playlist=4aja6p8wSnA&rel=0&modestbranding=1&playsinline=1"
+            src="https://www.youtube.com/embed/4aja6p8wSnA?enablejsapi=1&origin=https%3A%2F%2Fdavidecallegari.github.io&autoplay=1&mute=1&controls=1&loop=1&playlist=4aja6p8wSnA&rel=0&modestbranding=1&playsinline=1"
             title="Showreel Davide Callegari"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerpolicy="strict-origin-when-cross-origin"
@@ -201,7 +201,7 @@
             <button class="bio-arrow-btn" id="bioArrowBtn" type="button" aria-expanded="false" aria-controls="bioDrawer">
                 <span class="bio-btn-label">chi sono</span>
                 <span class="bio-icon-bobber">
-                    <svg viewBox="0 0 40 28">
+                    <svg aria-hidden="true" viewBox="0 0 40 28">
                         <path class="bio-sparkle" d="M 20,1 L 21.4,4.6 L 25,6 L 21.4,7.4 L 20,11 L 18.6,7.4 L 15,6 L 18.6,4.6 Z" />
                         <path d="M 8,13 L 20,23 L 32,13" />
                     </svg>
@@ -212,7 +212,7 @@
                 <div class="bio-drawer-inner">
                     <div class="bio-content">
                         <div class="bio-photo-card">
-                            <svg class="bio-photo-tape"><use href="#holder-tape"></use></svg>
+                            <svg aria-hidden="true" class="bio-photo-tape"><use href="#holder-tape"></use></svg>
                             <picture>
                                 <source srcset="img/webp/profile.webp" type="image/webp">
                                 <img src="img/profile.jpg" alt="Davide Callegari" loading="lazy" decoding="async">
@@ -228,7 +228,7 @@
                                 Costruiamo la prossima storia insieme!
                             </p>
                             <a class="cv-download-link" href="Davide_Callegari_CV.pdf" target="_blank" rel="noopener">
-                                <svg><use href="#letter-page-icon"></use></svg>
+                                <svg aria-hidden="true"><use href="#letter-page-icon"></use></svg>
                                 Scarica il mio curriculum
                             </a>
                         </div>
@@ -240,16 +240,16 @@
 
     <!-- PULSANTE VIAGGIO (AEROPLANINO / PALLONCINO) -->
     <button class="magic-travel-btn" id="magicTravelBtn" type="button" aria-label="Vai ai contatti" title="Contatti">
-        <svg class="icon-plane"><use href="#paper-plane-icon"></use></svg>
-        <svg class="icon-balloon"><use href="#balloon-up-icon"></use></svg>
+        <svg class="icon-plane" aria-hidden="true"><use href="#paper-plane-icon"></use></svg>
+        <svg class="icon-balloon" aria-hidden="true"><use href="#balloon-up-icon"></use></svg>
     </button>
 
     <main>
         <!-- BLOCCO 1: FOTO 001 - 018 -->
-        <section class="photo-grid" data-start="1" data-end="18"></section>
+        <section class="photo-grid" aria-label="Fotografie 1–18" data-start="1" data-end="18"></section>
 
         <!-- PRIMA STRISCIA DI 3 VIDEO + ALLORI + BACKSTAGE -->
-        <section class="video-strip-wrapper" data-bts-start="1">
+        <section class="video-strip-wrapper" aria-label="Video, premi e backstage — prima raccolta" data-bts-start="1">
             <div class="video-strip">
                 <div class="media-card">
                     <div class="video-item" role="button" tabindex="0" aria-label="Riproduci video 1" data-video-id="9a40Hy3DSAI">
@@ -258,7 +258,7 @@
                             <source srcset="img/webp/vid001.webp" type="image/webp">
                             <img class="video-thumb" src="img/vid001.jpg" alt="Copertina video 1" loading="lazy" decoding="async">
                         </picture>
-                        <div class="custom-play-btn"><svg><use href="#star-play-icon"></use></svg></div>
+                        <div class="custom-play-btn"><svg aria-hidden="true"><use href="#star-play-icon"></use></svg></div>
                     </div>
                     <div class="media-credits">
                         <div class="media-credits-inner">
@@ -275,7 +275,7 @@
                             <source srcset="img/webp/vid002.webp" type="image/webp">
                             <img class="video-thumb" src="img/vid002.jpg" alt="Copertina video 2" loading="lazy" decoding="async">
                         </picture>
-                        <div class="custom-play-btn"><svg><use href="#star-play-icon"></use></svg></div>
+                        <div class="custom-play-btn"><svg aria-hidden="true"><use href="#star-play-icon"></use></svg></div>
                     </div>
                     <div class="media-credits">
                         <div class="media-credits-inner">
@@ -292,7 +292,7 @@
                             <source srcset="img/webp/vid003.webp" type="image/webp">
                             <img class="video-thumb" src="img/vid003.jpg" alt="Copertina video 3" loading="lazy" decoding="async">
                         </picture>
-                        <div class="custom-play-btn"><svg><use href="#star-play-icon"></use></svg></div>
+                        <div class="custom-play-btn"><svg aria-hidden="true"><use href="#star-play-icon"></use></svg></div>
                     </div>
                     <div class="media-credits">
                         <div class="media-credits-inner">
@@ -305,58 +305,58 @@
 
             <div class="laurels-row">
                 <div class="laurel-badge">
-                    <svg class="laurel-branch"><use href="#laurel-left"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-left"></use></svg>
                     <div class="laurel-content">
                         <span class="laurel-podium">Vincitore</span>
                         <span class="laurel-festival">PadovaCiak<br>2026</span>
                     </div>
-                    <svg class="laurel-branch"><use href="#laurel-right"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-right"></use></svg>
                 </div>
                 <div class="laurel-badge">
-                    <svg class="laurel-branch"><use href="#laurel-left"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-left"></use></svg>
                     <div class="laurel-content">
                         <span class="laurel-podium">Finalista</span>
                         <span class="laurel-festival">Believe<br>FilmFestival</span>
                     </div>
-                    <svg class="laurel-branch"><use href="#laurel-right"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-right"></use></svg>
                 </div>
                 <div class="laurel-badge">
-                    <svg class="laurel-branch"><use href="#laurel-left"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-left"></use></svg>
                     <div class="laurel-content">
                         <span class="laurel-podium">Menzione speciale</span>
                         <span class="laurel-festival">Nebrodi<br>Cinema Doc</span>
                     </div>
-                    <svg class="laurel-branch"><use href="#laurel-right"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-right"></use></svg>
                 </div>
                 <div class="laurel-badge">
-                    <svg class="laurel-branch"><use href="#laurel-left"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-left"></use></svg>
                     <div class="laurel-content">
                         <span class="laurel-podium">Finalista</span>
                         <span class="laurel-festival">Trailers<br>FilmFest</span>
                     </div>
-                    <svg class="laurel-branch"><use href="#laurel-right"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-right"></use></svg>
                 </div>
                 <div class="laurel-badge">
-                    <svg class="laurel-branch"><use href="#laurel-left"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-left"></use></svg>
                     <div class="laurel-content">
                         <span class="laurel-podium">Selezione ufficiale</span>
                         <span class="laurel-festival">Filmmaker<br>Session</span>
                     </div>
-                    <svg class="laurel-branch"><use href="#laurel-right"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-right"></use></svg>
                 </div>
             </div>
 
             <div class="bts-layer"></div>
             <button class="cat-toggle-btn" type="button" aria-expanded="false" aria-label="Mostra foto backstage">
-                <svg><use href="#cute-cat-face"></use></svg>
+                <svg aria-hidden="true"><use href="#cute-cat-face"></use></svg>
             </button>
         </section>
 
         <!-- BLOCCO 2: FOTO 019 - 039 -->
-        <section class="photo-grid" data-start="19" data-end="39"></section>
+        <section class="photo-grid" aria-label="Fotografie 19–39" data-start="19" data-end="39"></section>
 
         <!-- SECONDA STRISCIA DI 3 VIDEO + ALLORI + BACKSTAGE -->
-        <section class="video-strip-wrapper warm-strip" data-bts-start="8">
+        <section class="video-strip-wrapper warm-strip" aria-label="Video, premi e backstage — seconda raccolta" data-bts-start="8">
             <div class="video-strip">
                 <div class="media-card">
                     <div class="video-item" role="button" tabindex="0" aria-label="Riproduci video 4" data-video-id="nktAgFjmnHU">
@@ -365,7 +365,7 @@
                             <source srcset="img/webp/vid004.webp" type="image/webp">
                             <img class="video-thumb" src="img/vid004.jpg" alt="Copertina video 4" loading="lazy" decoding="async">
                         </picture>
-                        <div class="custom-play-btn"><svg><use href="#star-play-icon"></use></svg></div>
+                        <div class="custom-play-btn"><svg aria-hidden="true"><use href="#star-play-icon"></use></svg></div>
                     </div>
                     <div class="media-credits">
                         <div class="media-credits-inner">
@@ -382,7 +382,7 @@
                             <source srcset="img/webp/vid005.webp" type="image/webp">
                             <img class="video-thumb" src="img/vid005.jpg" alt="Copertina video 5" loading="lazy" decoding="async">
                         </picture>
-                        <div class="custom-play-btn"><svg><use href="#star-play-icon"></use></svg></div>
+                        <div class="custom-play-btn"><svg aria-hidden="true"><use href="#star-play-icon"></use></svg></div>
                     </div>
                     <div class="media-credits">
                         <div class="media-credits-inner">
@@ -399,7 +399,7 @@
                             <source srcset="img/webp/vid006.webp" type="image/webp">
                             <img class="video-thumb" src="img/vid006.jpg" alt="Copertina video 6" loading="lazy" decoding="async">
                         </picture>
-                        <div class="custom-play-btn"><svg><use href="#star-play-icon"></use></svg></div>
+                        <div class="custom-play-btn"><svg aria-hidden="true"><use href="#star-play-icon"></use></svg></div>
                     </div>
                     <div class="media-credits">
                         <div class="media-credits-inner">
@@ -412,50 +412,50 @@
 
             <div class="laurels-row">
                 <div class="laurel-badge">
-                    <svg class="laurel-branch"><use href="#laurel-left"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-left"></use></svg>
                     <div class="laurel-content">
                         <span class="laurel-podium">Premio Pluriart</span>
                         <span class="laurel-festival">PadovaCiak<br>2024</span>
                     </div>
-                    <svg class="laurel-branch"><use href="#laurel-right"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-right"></use></svg>
                 </div>
                 <div class="laurel-badge">
-                    <svg class="laurel-branch"><use href="#laurel-left"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-left"></use></svg>
                     <div class="laurel-content">
                         <span class="laurel-podium">Finalista</span>
                         <span class="laurel-festival">Linea d'ombra<br>UNIFEST</span>
                     </div>
-                    <svg class="laurel-branch"><use href="#laurel-right"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-right"></use></svg>
                 </div>
                 <div class="laurel-badge">
-                    <svg class="laurel-branch"><use href="#laurel-left"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-left"></use></svg>
                     <div class="laurel-content">
                         <span class="laurel-podium">Finalista</span>
                         <span class="laurel-festival">Cortintelvi<br>2025</span>
                     </div>
-                    <svg class="laurel-branch"><use href="#laurel-right"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-right"></use></svg>
                 </div>
                 <div class="laurel-badge">
-                    <svg class="laurel-branch"><use href="#laurel-left"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-left"></use></svg>
                     <div class="laurel-content">
                         <span class="laurel-podium">Finalista</span>
                         <span class="laurel-festival">Valsusa<br>Filmfest</span>
                     </div>
-                    <svg class="laurel-branch"><use href="#laurel-right"></use></svg>
+                    <svg aria-hidden="true" class="laurel-branch"><use href="#laurel-right"></use></svg>
                 </div>
             </div>
 
             <div class="bts-layer"></div>
             <button class="cat-toggle-btn" type="button" aria-expanded="false" aria-label="Mostra foto backstage">
-                <svg><use href="#cute-cat-face"></use></svg>
+                <svg aria-hidden="true"><use href="#cute-cat-face"></use></svg>
             </button>
         </section>
 
         <!-- BLOCCO 3: FOTO 040 - 056 -->
-        <section class="photo-grid" data-start="40" data-end="56"></section>
+        <section class="photo-grid" aria-label="Fotografie 40–56" data-start="40" data-end="56"></section>
 
         <!-- TERZA STRISCIA: 4 REEL VERTICALI DA INSTAGRAM -->
-        <section class="video-strip-wrapper green-strip">
+        <section class="video-strip-wrapper green-strip" aria-label="Reel Instagram">
             <div class="reel-strip">
                 <div class="media-card">
                     <div class="reel-item" role="button" tabindex="0" aria-label="Riproduci reel 1" data-reel-id="DBtp_pJIaGO">
@@ -464,7 +464,7 @@
                             <source srcset="img/webp/reel001.webp" type="image/webp">
                             <img class="video-thumb" src="img/reel001.jpg" alt="Copertina reel 1" loading="lazy" decoding="async">
                         </picture>
-                        <div class="custom-play-btn"><svg><use href="#star-play-icon"></use></svg></div>
+                        <div class="custom-play-btn"><svg aria-hidden="true"><use href="#star-play-icon"></use></svg></div>
                     </div>
                     <div class="media-credits">
                         <div class="media-credits-inner">
@@ -481,7 +481,7 @@
                             <source srcset="img/webp/reel002.webp" type="image/webp">
                             <img class="video-thumb" src="img/reel002.jpg" alt="Copertina reel 2" loading="lazy" decoding="async">
                         </picture>
-                        <div class="custom-play-btn"><svg><use href="#star-play-icon"></use></svg></div>
+                        <div class="custom-play-btn"><svg aria-hidden="true"><use href="#star-play-icon"></use></svg></div>
                     </div>
                     <div class="media-credits">
                         <div class="media-credits-inner">
@@ -498,7 +498,7 @@
                             <source srcset="img/webp/reel003.webp" type="image/webp">
                             <img class="video-thumb" src="img/reel003.jpg" alt="Copertina reel 3" loading="lazy" decoding="async">
                         </picture>
-                        <div class="custom-play-btn"><svg><use href="#star-play-icon"></use></svg></div>
+                        <div class="custom-play-btn"><svg aria-hidden="true"><use href="#star-play-icon"></use></svg></div>
                     </div>
                     <div class="media-credits">
                         <div class="media-credits-inner">
@@ -515,7 +515,7 @@
                             <source srcset="img/webp/reel004.webp" type="image/webp">
                             <img class="video-thumb" src="img/reel004.jpg" alt="Copertina reel 4" loading="lazy" decoding="async">
                         </picture>
-                        <div class="custom-play-btn"><svg><use href="#star-play-icon"></use></svg></div>
+                        <div class="custom-play-btn"><svg aria-hidden="true"><use href="#star-play-icon"></use></svg></div>
                     </div>
                     <div class="media-credits">
                         <div class="media-credits-inner">
@@ -528,14 +528,14 @@
         </section>
 
         <!-- BLOCCO 4: FOTO 057 - 068 -->
-        <section class="photo-grid" data-start="57" data-end="68"></section>
+        <section class="photo-grid" aria-label="Fotografie 57–68" data-start="57" data-end="68"></section>
     </main>
 
     <!-- 5. FOOTER -->
     <footer id="contactFooter">
         <div class="footer-left">
             <span class="footer-location">
-                <svg class="pin-icon"><use href="#location-pin-icon"></use></svg>
+                <svg aria-hidden="true" class="pin-icon"><use href="#location-pin-icon"></use></svg>
                 Venezia
             </span>
             <a href="mailto:dkalle@libero.it" data-copy="dkalle@libero.it" title="Clicca per copiare l'email">
@@ -549,11 +549,11 @@
         </div>
         <div class="footer-right">
             <a href="https://instagram.com/inquadratidadavide" target="_blank" rel="noopener noreferrer">
-                <svg class="ig-icon"><use href="#ig-logo"></use></svg>
+                <svg aria-hidden="true" class="ig-icon"><use href="#ig-logo"></use></svg>
                 @inquadratidadavide
             </a>
             <a href="https://instagram.com/youngsproduzioni" target="_blank" rel="noopener noreferrer">
-                <svg class="ig-icon"><use href="#ig-logo"></use></svg>
+                <svg aria-hidden="true" class="ig-icon"><use href="#ig-logo"></use></svg>
                 @youngsproduzioni
             </a>
         </div>
@@ -563,42 +563,42 @@
     <!-- 6. LIGHTBOX WHIMSY -->
     <div class="lightbox-modal" id="lightboxModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Visualizzatore fotografia">
         <button class="lb-share-btn" id="lbShareBtn" type="button" aria-label="Copia link foto" title="Copia link foto">
-            <svg><use href="#link-chain-icon"></use></svg>
+            <svg aria-hidden="true"><use href="#link-chain-icon"></use></svg>
             <span class="share-toast" id="shareToast" aria-live="polite">Copiato!</span>
         </button>
 
         <button class="lb-hanging-close" id="lbCloseBtn" type="button" aria-label="Chiudi foto" title="Chiudi">
-            <svg><use href="#hanging-star-close"></use></svg>
+            <svg aria-hidden="true"><use href="#hanging-star-close"></use></svg>
         </button>
 
         <button class="lb-nav-btn lb-prev" id="lbPrevBtn" type="button" aria-label="Foto precedente">
-            <svg><use href="#whimsy-arrow-prev"></use></svg>
+            <svg aria-hidden="true"><use href="#whimsy-arrow-prev"></use></svg>
         </button>
 
         <div class="lightbox-stage" id="lightboxStage" data-section="1">
             <img class="lightbox-img" id="lightboxImg" alt="Fotografia ingrandita">
 
             <div class="lb-holder-layer">
-                <svg class="lb-mount mount-sec-1 tri-tl"><use href="#holder-triangle"></use></svg>
-                <svg class="lb-mount mount-sec-1 tri-tr"><use href="#holder-triangle"></use></svg>
-                <svg class="lb-mount mount-sec-1 tri-bl"><use href="#holder-triangle"></use></svg>
-                <svg class="lb-mount mount-sec-1 tri-br"><use href="#holder-triangle"></use></svg>
+                <svg aria-hidden="true" class="lb-mount mount-sec-1 tri-tl"><use href="#holder-triangle"></use></svg>
+                <svg aria-hidden="true" class="lb-mount mount-sec-1 tri-tr"><use href="#holder-triangle"></use></svg>
+                <svg aria-hidden="true" class="lb-mount mount-sec-1 tri-bl"><use href="#holder-triangle"></use></svg>
+                <svg aria-hidden="true" class="lb-mount mount-sec-1 tri-br"><use href="#holder-triangle"></use></svg>
 
-                <svg class="lb-mount mount-sec-2 tape-tr"><use href="#holder-tape"></use></svg>
-                <svg class="lb-mount mount-sec-2 tape-bl"><use href="#holder-tape"></use></svg>
+                <svg aria-hidden="true" class="lb-mount mount-sec-2 tape-tr"><use href="#holder-tape"></use></svg>
+                <svg aria-hidden="true" class="lb-mount mount-sec-2 tape-bl"><use href="#holder-tape"></use></svg>
 
-                <svg class="lb-mount mount-sec-3 star-pin-tl"><use href="#holder-star-pin"></use></svg>
-                <svg class="lb-mount mount-sec-3 star-pin-tr"><use href="#holder-star-pin"></use></svg>
-                <svg class="lb-mount mount-sec-3 star-pin-bl"><use href="#holder-star-pin"></use></svg>
-                <svg class="lb-mount mount-sec-3 star-pin-br"><use href="#holder-star-pin"></use></svg>
+                <svg aria-hidden="true" class="lb-mount mount-sec-3 star-pin-tl"><use href="#holder-star-pin"></use></svg>
+                <svg aria-hidden="true" class="lb-mount mount-sec-3 star-pin-tr"><use href="#holder-star-pin"></use></svg>
+                <svg aria-hidden="true" class="lb-mount mount-sec-3 star-pin-bl"><use href="#holder-star-pin"></use></svg>
+                <svg aria-hidden="true" class="lb-mount mount-sec-3 star-pin-br"><use href="#holder-star-pin"></use></svg>
 
-                <svg class="lb-mount mount-sec-4 peg-left"><use href="#holder-peg"></use></svg>
-                <svg class="lb-mount mount-sec-4 peg-right"><use href="#holder-peg"></use></svg>
+                <svg aria-hidden="true" class="lb-mount mount-sec-4 peg-left"><use href="#holder-peg"></use></svg>
+                <svg aria-hidden="true" class="lb-mount mount-sec-4 peg-right"><use href="#holder-peg"></use></svg>
             </div>
         </div>
 
         <button class="lb-nav-btn lb-next" id="lbNextBtn" type="button" aria-label="Foto successiva">
-            <svg><use href="#whimsy-arrow-next"></use></svg>
+            <svg aria-hidden="true"><use href="#whimsy-arrow-next"></use></svg>
         </button>
     </div>
 

@@ -44,10 +44,25 @@
     const heroSoundBtn = document.getElementById('heroSoundBtn');
     const heroIframe = document.getElementById('heroIframe');
     let heroUnmuted = false;
+    let heroPlayerReady = false;
+    let pendingHeroSound = null;
+    const pendingVideoCommands = new WeakMap();
 
     function sendYtCommand(iframeEl, func, args = []) {
         if (!iframeEl || !iframeEl.contentWindow) return;
         iframeEl.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args }), 'https://www.youtube.com');
+    }
+
+    function sendVideoCommand(iframeEl, func, args = []) {
+        if (!iframeEl) return;
+        if (iframeEl.dataset.playerReady === 'true') {
+            sendYtCommand(iframeEl, func, args);
+            return;
+        }
+
+        const commands = pendingVideoCommands.get(iframeEl) || [];
+        commands.push({ func, args });
+        pendingVideoCommands.set(iframeEl, commands);
     }
 
     function syncHeroSoundUi(unmuted) {
@@ -70,10 +85,43 @@
     }
 
     window.addEventListener('message', (e) => {
-        if (e.origin !== 'https://www.youtube.com' || e.source !== heroIframe?.contentWindow) return;
+        if (e.origin !== 'https://www.youtube.com') return;
+
         try {
             const data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
-            if (data?.event === 'infoDelivery' && data.info) {
+            if (!data || typeof data !== 'object') return;
+
+            // I player dei video possono caricarsi dopo che è già stato richiesto
+            // un comando di pausa o ripresa: in quel caso esegui la coda su onReady.
+            const videoIframe = Array.from(document.querySelectorAll('.video-item iframe'))
+                .find((iframe) => iframe.contentWindow === e.source);
+            if (videoIframe) {
+                if (data.event === 'onReady') {
+                    videoIframe.dataset.playerReady = 'true';
+                    const commands = pendingVideoCommands.get(videoIframe) || [];
+                    pendingVideoCommands.delete(videoIframe);
+                    commands.forEach(({ func, args }) => sendYtCommand(videoIframe, func, args));
+                }
+                return;
+            }
+
+            if (e.source !== heroIframe?.contentWindow) return;
+            if (data.event === 'onReady') heroPlayerReady = true;
+
+            if (heroPlayerReady && pendingHeroSound !== null) {
+                const shouldUnmute = pendingHeroSound;
+                pendingHeroSound = null;
+                if (shouldUnmute) {
+                    sendYtCommand(heroIframe, 'unMute');
+                    sendYtCommand(heroIframe, 'setVolume', [100]);
+                } else {
+                    sendYtCommand(heroIframe, 'mute');
+                }
+                // Evita che un infoDelivery precedente sovrascriva la scelta appena applicata.
+                if (data.event === 'infoDelivery') return;
+            }
+
+            if (data.event === 'infoDelivery' && data.info) {
                 if (typeof data.info.muted === 'boolean' || typeof data.info.volume === 'number') {
                     const isMuted = data.info.muted ?? !heroUnmuted;
                     const vol = data.info.volume ?? 100;
@@ -84,14 +132,22 @@
     });
 
     function toggleHeroSound() {
-        if (!heroUnmuted) {
+        const shouldUnmute = !heroUnmuted;
+        syncHeroSoundUi(shouldUnmute);
+        if (shouldUnmute) heroContainer.classList.add('interactive');
+
+        if (!heroPlayerReady) {
+            // Se l'utente preme prima che YouTube sia pronto, conserva l'ultima
+            // scelta e applicala appena il player risponde.
+            pendingHeroSound = shouldUnmute;
+            return;
+        }
+
+        if (shouldUnmute) {
             sendYtCommand(heroIframe, 'unMute');
             sendYtCommand(heroIframe, 'setVolume', [100]);
-            heroContainer.classList.add('interactive');
-            syncHeroSoundUi(true);
         } else {
             sendYtCommand(heroIframe, 'mute');
-            syncHeroSoundUi(false);
         }
     }
 
@@ -118,17 +174,44 @@
     }
 
     /* =========================================================
-       3. PULSANTE VIAGGIO (UNICA LOGICA REATTIVA ALLO SCROLL)
+       3. PULSANTE VIAGGIO (AEROPLANINO E PALLONCINO)
        ========================================================= */
     const magicTravelBtn = document.getElementById('magicTravelBtn');
     const contactFooter = document.getElementById('contactFooter');
+    const nameHeading = document.querySelector('.header-text h1');
     let isAtBottom = false;
     let travelAnimId = null;
     let lastTravelY = '';
 
-    // Unica fonte di verità: posiziona il bottone in base a quanto il footer entra nello schermo
+    function getMaxScrollY() {
+        const scrollElement = document.scrollingElement || document.documentElement;
+        return Math.max(0, scrollElement.scrollHeight - window.innerHeight);
+    }
+
+    function getTravelTarget(goingUp) {
+        if (!goingUp) return getMaxScrollY();
+
+        if (heroContainer) {
+            const showreelBottom = heroContainer.getBoundingClientRect().bottom + window.scrollY;
+            const visibleShowreel = window.innerWidth <= 650 ? 30 : 52;
+            return Math.max(0, showreelBottom - visibleShowreel);
+        }
+
+        if (!nameHeading) return 0;
+        return Math.max(0, nameHeading.getBoundingClientRect().top + window.scrollY);
+    }
+
+    function setBalloonMode(atBottom) {
+        if (isAtBottom === atBottom || !magicTravelBtn) return;
+        isAtBottom = atBottom;
+        magicTravelBtn.classList.toggle('is-balloon', atBottom);
+        magicTravelBtn.setAttribute('aria-label', atBottom ? 'Torna al mio nome' : 'Vai ai contatti');
+        magicTravelBtn.setAttribute('title', atBottom ? 'Torna su' : 'Contatti');
+    }
+
     function syncTravelBtn() {
         if (!magicTravelBtn || !contactFooter) return;
+
         const rect = contactFooter.getBoundingClientRect();
         const visibleFooter = Math.max(0, window.innerHeight - rect.top);
         const progress = Math.min(1, visibleFooter / Math.max(1, rect.height));
@@ -140,26 +223,14 @@
             magicTravelBtn.style.setProperty('--travel-y', nextTravelY);
         }
 
-        // Durante il volo automatico cambia icona solo a fine corsa; a mano cambia appena entra nel footer
-        if (!travelAnimId) {
-            setBalloonMode(progress > 0.15);
-        }
-    }
-
-    function setBalloonMode(atBottom) {
-        if (isAtBottom === atBottom || !magicTravelBtn) return;
-        isAtBottom = atBottom;
-        magicTravelBtn.classList.toggle('is-balloon', atBottom);
-        magicTravelBtn.setAttribute('aria-label', atBottom ? 'Torna in cima' : 'Vai ai contatti');
-        magicTravelBtn.setAttribute('title', atBottom ? 'Torna su' : 'Contatti');
+        if (!travelAnimId) setBalloonMode(window.scrollY >= getMaxScrollY() - 2);
     }
 
     function cancelTravel() {
-        if (travelAnimId) {
-            cancelAnimationFrame(travelAnimId);
-            travelAnimId = null;
-            syncTravelBtn();
-        }
+        if (!travelAnimId) return;
+        cancelAnimationFrame(travelAnimId);
+        travelAnimId = null;
+        syncTravelBtn();
     }
 
     function cancelTravelOnKeydown(e) {
@@ -180,36 +251,56 @@
     window.addEventListener('touchstart', cancelTravel, { passive: true });
     window.addEventListener('keydown', cancelTravelOnKeydown);
     window.addEventListener('scroll', syncTravelBtn, { passive: true });
-    window.addEventListener('resize', syncTravelBtn, { passive: true });
+    window.addEventListener('resize', () => {
+        if (isAtBottom && !travelAnimId) window.scrollTo(0, getMaxScrollY());
+        syncTravelBtn();
+    }, { passive: true });
+
+    // Se immagini o contenuti tardivi allungano la pagina dopo l'arrivo, resta sul fondo.
+    if ('ResizeObserver' in window && document.body) {
+        const pageSizeObserver = new ResizeObserver(() => {
+            if (isAtBottom && !travelAnimId) window.scrollTo(0, getMaxScrollY());
+            syncTravelBtn();
+        });
+        pageSizeObserver.observe(document.body);
+    }
 
     function flyTo(goingUp) {
         cancelTravel();
 
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            window.scrollTo(0, goingUp ? 0 : Math.max(0, document.documentElement.scrollHeight - window.innerHeight));
+            window.scrollTo(0, getTravelTarget(goingUp));
+            setBalloonMode(!goingUp);
             syncTravelBtn();
             return;
         }
 
         const startY = window.scrollY;
         const startTime = performance.now();
+        // Durate e curva sono quelle originali: 950 ms in discesa, 1800 ms in salita.
         const duration = goingUp ? 1800 : 950;
 
         function step(now) {
-            const t = Math.min((now - startTime) / duration, 1);
-            const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-            const targetY = goingUp ? 0 : Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+            const progress = Math.min((now - startTime) / duration, 1);
+            const easedProgress = progress < 0.5
+                ? 4 * progress * progress * progress
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
-            window.scrollTo(0, startY + (targetY - startY) * ease);
+            // La destinazione viene aggiornata durante il volo: l'altezza della pagina
+            // può cambiare mentre si caricano immagini o altri contenuti.
+            const targetY = getTravelTarget(goingUp);
+            window.scrollTo(0, startY + (targetY - startY) * easedProgress);
 
-            if (t < 1) {
+            if (progress < 1) {
                 travelAnimId = requestAnimationFrame(step);
-            } else {
-                travelAnimId = null;
-                window.scrollTo(0, goingUp ? 0 : Math.max(0, document.documentElement.scrollHeight - window.innerHeight));
-                setBalloonMode(!goingUp);
-                syncTravelBtn();
+                return;
             }
+
+            // Ultimo allineamento preciso alla posizione effettiva, non a un'altezza stimata.
+            window.scrollTo(0, getTravelTarget(goingUp));
+            travelAnimId = null;
+            setBalloonMode(!goingUp);
+            syncTravelBtn();
         }
 
         travelAnimId = requestAnimationFrame(step);
@@ -233,6 +324,18 @@
         else show();
     }
 
+    function fallbackToJpgAfterWebpError(img) {
+        const fallbackSrc = img.dataset.fallbackSrc;
+        if (!fallbackSrc || !img.currentSrc.includes('/webp/')) return false;
+
+        // Un errore del WebP non fa scattare automaticamente il fallback
+        // del picture: rimuoviamo la source e carichiamo esplicitamente il JPG.
+        img.closest('picture')?.querySelector('source')?.removeAttribute('srcset');
+        delete img.dataset.fallbackSrc;
+        img.src = fallbackSrc;
+        return true;
+    }
+
     function createPhotoNode(num) {
         const idStr = pad3(num);
         const link = document.createElement('a');
@@ -249,19 +352,24 @@
         source.type = 'image/webp';
 
         const img = document.createElement('img');
-        img.src = `img/img${idStr}.jpg`;
+        // Il JPG è il fallback del picture. Lo assegniamo solo dopo aver
+        // inserito il picture nel documento, così il browser può scegliere WebP.
+        img.dataset.fallbackSrc = `img/img${idStr}.jpg`;
         img.alt = `Fotografia ${num} — Davide Callegari`;
         img.decoding = 'async';
+        img.addEventListener('load', () => {
+            delete img.dataset.fallbackSrc;
+            revealImageWithFade(img);
+        }, { once: true });
+        img.addEventListener('error', () => {
+            if (!fallbackToJpgAfterWebpError(img)) {
+                delete img.dataset.fallbackSrc;
+                img.classList.add('loaded');
+            }
+        });
 
         if (num <= 3) img.fetchPriority = 'high';
         else if (num > 6) img.loading = 'lazy';
-
-        if (img.complete && img.naturalWidth > 0) {
-            img.classList.add('loaded');
-        } else {
-            img.addEventListener('load', () => revealImageWithFade(img), { once: true });
-            img.addEventListener('error', () => img.classList.add('loaded'), { once: true });
-        }
 
         picture.append(source, img);
         link.append(picture);
@@ -287,6 +395,16 @@
 
             items.forEach((node, idx) => cols[idx % colsCount].appendChild(node));
             grid.replaceChildren(...cols);
+
+            // Imposta il fallback JPG soltanto quando il source WebP è già
+            // nel documento: i browser compatibili scaricano così il solo WebP.
+            grid.querySelectorAll('img[data-fallback-src]').forEach((img) => {
+                img.src = img.dataset.fallbackSrc;
+                if (img.complete && img.naturalWidth > 0) {
+                    delete img.dataset.fallbackSrc;
+                    img.classList.add('loaded');
+                }
+            });
         });
     }
 
@@ -328,14 +446,18 @@
             sendYtCommand(heroIframe, 'mute');
             syncHeroSoundUi(false);
         }
+
+        // YouTube resta montato per conservare il punto di ripresa.
         document.querySelectorAll('.video-item[data-playing="true"]').forEach((other) => {
-            if (other !== currentItem) sendYtCommand(other.querySelector('iframe'), 'pauseVideo');
+            if (other !== currentItem) sendVideoCommand(other.querySelector('iframe'), 'pauseVideo');
         });
+
+        // Instagram non espone un comando di pausa affidabile: rimuovere l'iframe
+        // ferma il reel e lascia intatte copertina, link per il PDF e crediti.
         document.querySelectorAll('.reel-item[data-playing="true"]').forEach((other) => {
             if (other === currentItem) return;
-            const thumbnail = other.querySelector('picture');
-            const playButton = other.querySelector('.custom-play-btn');
-            if (thumbnail && playButton) other.replaceChildren(thumbnail, playButton);
+            other.querySelector('iframe')?.remove();
+            other.classList.remove('is-playing');
             delete other.dataset.playing;
             other.closest('.media-card')?.classList.remove('is-active');
         });
@@ -343,9 +465,16 @@
 
     function activateVideoItem(item) {
         pauseAllOtherVideos(item);
-        if (item.dataset.playing === 'true') return;
-        item.dataset.playing = 'true';
 
+        if (item.dataset.playing === 'true') {
+            if (item.classList.contains('video-item')) {
+                sendVideoCommand(item.querySelector('iframe'), 'playVideo');
+            }
+            return;
+        }
+
+        item.dataset.playing = 'true';
+        item.classList.add('is-playing');
         item.closest('.media-card')?.classList.add('is-active');
 
         const { videoId, reelId } = item.dataset;
@@ -353,7 +482,13 @@
         iframe.title = item.getAttribute('aria-label') || 'Video player';
 
         if (videoId) {
-            iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+            iframe.addEventListener('load', () => {
+                iframe.contentWindow?.postMessage(JSON.stringify({ event: 'listening', id: 'portfolio-video' }), 'https://www.youtube.com');
+            });
+            const originParam = window.location.origin === 'null'
+                ? ''
+                : `&origin=${encodeURIComponent(window.location.origin)}`;
+            iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1${originParam}&autoplay=1&rel=0&modestbranding=1&playsinline=1`;
             iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
             iframe.referrerPolicy = 'strict-origin-when-cross-origin';
             iframe.allowFullscreen = true;
@@ -363,7 +498,10 @@
             iframe.allow = 'autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share';
             iframe.scrolling = 'no';
         }
-        item.replaceChildren(iframe);
+
+        // Appenderlo, invece di sostituire tutti i figli, conserva il link PDF
+        // e permette di ripristinare la copertina senza ricreare il markup.
+        item.appendChild(iframe);
     }
 
     document.querySelectorAll('.video-item, .reel-item').forEach((item) => {
@@ -413,10 +551,15 @@
             source.type = 'image/webp';
 
             const img = document.createElement('img');
-            img.src = `img/bts${btsNum}.jpg`;
+            img.dataset.fallbackSrc = `img/bts${btsNum}.jpg`;
             img.alt = `Backstage ${btsNum}`;
             img.loading = 'lazy';
             img.decoding = 'async';
+            img.addEventListener('load', () => { delete img.dataset.fallbackSrc; }, { once: true });
+            img.addEventListener('error', () => {
+                fallbackToJpgAfterWebpError(img);
+                delete img.dataset.fallbackSrc;
+            });
 
             picture.append(source, img);
             card.appendChild(picture);
@@ -424,6 +567,14 @@
         }
 
         layer.appendChild(frag);
+        // Come per la griglia, il fallback JPG viene impostato solo dopo
+        // l'inserimento del picture completo nel documento.
+        layer.querySelectorAll('img[data-fallback-src]').forEach((img) => {
+            img.src = img.dataset.fallbackSrc;
+        });
+        // Registra opacity/transform iniziali prima che show-bts venga applicata.
+        // Serve soprattutto alla prima apertura, quando le card sono appena create.
+        void layer.offsetHeight;
     }
 
     document.querySelectorAll('.video-strip-wrapper[data-bts-start]').forEach((wrapper) => {
@@ -457,7 +608,23 @@
     let isLbOpen = false;
     let lastFocusedEl = null;
     let activeLoadToken = 0;
+    let inertBackground = [];
     const preloadedSet = new Set();
+
+    function setLightboxBackgroundInert(inert) {
+        if (inert) {
+            inertBackground = Array.from(document.body.children)
+                .filter((element) => element !== lbModal && element.tagName !== 'SCRIPT')
+                .map((element) => ({ element, wasInert: element.inert }));
+            inertBackground.forEach(({ element }) => { element.inert = true; });
+            return;
+        }
+
+        inertBackground.forEach(({ element, wasInert }) => {
+            element.inert = wasInert;
+        });
+        inertBackground = [];
+    }
 
     function preloadAdjacentPhotos(num) {
         const prev = num > 1 ? num - 1 : TOTAL_PHOTOS;
@@ -481,32 +648,57 @@
 
     function showPhoto(num, isInitialOpen = false) {
         currentPhoto = ((num - 1 + TOTAL_PHOTOS) % TOTAL_PHOTOS) + 1;
-        const idStr = pad3(currentPhoto);
-        const webpSrc = `img/webp/img${idStr}.webp`;
+        const photoNum = currentPhoto;
+        const idStr = pad3(photoNum);
         const jpgSrc = `img/img${idStr}.jpg`;
+        const webpSrc = `img/webp/img${idStr}.webp`;
         const token = ++activeLoadToken;
+        const altText = `Fotografia ${photoNum} — Davide Callegari`;
 
-        lbStage.dataset.section = String(getPhotoSection(currentPhoto));
-        lbImg.alt = `Fotografia ${currentPhoto} — Davide Callegari`;
-        lbImg.src = preloadedSet.has(currentPhoto) ? jpgSrc : webpSrc;
+        updateUrlParam(photoNum, isInitialOpen);
+        preloadAdjacentPhotos(photoNum);
 
+        function displayPhoto(src) {
+            if (token !== activeLoadToken || !isLbOpen) return;
+            lbStage.dataset.section = String(getPhotoSection(photoNum));
+            lbImg.alt = altText;
+            lbImg.src = src;
+        }
+
+        // Carica e decodifica direttamente il JPG definitivo. L'immagine attuale
+        // resta visibile durante il caricamento; non mostriamo prima la miniatura WebP.
         const hiResLoader = new Image();
-        const photoToCache = currentPhoto;
-        const upgradeToHiRes = () => {
-            preloadedSet.add(photoToCache);
-            if (token === activeLoadToken) lbImg.src = jpgSrc;
-        };
+        let handled = false;
 
-        hiResLoader.onload = upgradeToHiRes;
+        function onHiResLoaded() {
+            if (handled) return;
+            handled = true;
+            const reveal = () => {
+                preloadedSet.add(photoNum);
+                displayPhoto(jpgSrc);
+            };
+            if (typeof hiResLoader.decode === 'function') {
+                hiResLoader.decode().then(reveal, reveal);
+            } else {
+                reveal();
+            }
+        }
+
+        hiResLoader.addEventListener('load', onHiResLoaded, { once: true });
+        hiResLoader.addEventListener('error', () => {
+            if (token !== activeLoadToken || !isLbOpen) return;
+            // Fallback solo se il JPG non è disponibile: evita di lasciare il lightbox vuoto.
+            const fallback = new Image();
+            fallback.onload = () => displayPhoto(webpSrc);
+            fallback.src = webpSrc;
+        }, { once: true });
         hiResLoader.src = jpgSrc;
-        if (hiResLoader.complete && hiResLoader.naturalWidth > 0) upgradeToHiRes();
-
-        updateUrlParam(currentPhoto, isInitialOpen);
-        preloadAdjacentPhotos(currentPhoto);
+        if (hiResLoader.complete && hiResLoader.naturalWidth > 0) onHiResLoaded();
     }
 
     function openLightbox(num, triggerEl = null, fromUrl = false, fromPopState = false) {
         lastFocusedEl = triggerEl || document.activeElement;
+        if (!isLbOpen) lbImg.removeAttribute('src');
         isLbOpen = true;
 
         if (fromUrl) {
@@ -516,6 +708,7 @@
         showPhoto(num, !fromPopState);
         lbModal.classList.add('open');
         lbModal.setAttribute('aria-hidden', 'false');
+        setLightboxBackgroundInert(true);
         document.body.style.overflow = 'hidden';
         lbCloseBtn.focus({ preventScroll: true });
     }
@@ -526,6 +719,7 @@
         activeLoadToken++;
         lbModal.classList.remove('open');
         lbModal.setAttribute('aria-hidden', 'true');
+        setLightboxBackgroundInert(false);
         document.body.style.overflow = '';
 
         if (!fromPopState && window.history.state?.lb) {
