@@ -598,8 +598,6 @@ body::after {
     display: block;
 }
 
-.pdf-video-link { display: none; }
-
 .custom-play-btn svg,
 .laurel-branch,
 .leaning-cat,
@@ -915,6 +913,10 @@ body::after {
     display: block;
     object-fit: contain;
     background-color: #090c18;
+}
+
+.lightbox-img.is-loading {
+    visibility: hidden;
 }
 
 .lb-holder-layer {
@@ -1257,89 +1259,5 @@ footer a {
     }
 }
 
-/* =========================================================
-   11. ESPORTAZIONE PORTFOLIO PDF (@media print)
-   ========================================================= */
-@page {
-    size: A4 portrait;
-    margin: 0;
-}
-
-@media print {
-    html, body {
-        overflow: visible !important;
-    }
-
-    * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-    }
-
-    body::after,
-    .hero-video-container,
-    .bio-arrow-btn,
-    .bio-drawer,
-    .magic-travel-btn,
-    .cat-toggle-btn,
-    .lightbox-modal {
-        display: none !important;
-    }
-
-    .header-text { padding: 55px 20px 45px !important; }
-    .photo-grid { gap: 14px !important; margin-bottom: 40px !important; }
-    .masonry-col { gap: 14px !important; }
-
-    .photo-grid img {
-        opacity: 1 !important;
-        min-height: 0 !important;
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
-    }
-
-    .video-strip-wrapper {
-        margin: 40px 0 !important;
-        padding: 28px 0 22px !important;
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
-    }
-
-    .video-strip { grid-template-columns: repeat(3, 1fr) !important; gap: 14px !important; }
-    .reel-strip { grid-template-columns: repeat(4, 1fr) !important; gap: 24px !important; }
-
-    /* In stampa mostra sempre copertine e crediti, mai player o backstage. */
-    .video-item iframe,
-    .reel-item iframe,
-    .bts-layer {
-        display: none !important;
-    }
-
-    .video-item.is-playing picture,
-    .reel-item.is-playing picture {
-        display: block !important;
-    }
-
-    .video-item.is-playing .custom-play-btn,
-    .reel-item.is-playing .custom-play-btn {
-        display: flex !important;
-    }
-
-    .media-card .media-credits {
-        grid-template-rows: 1fr !important;
-        opacity: 1 !important;
-        margin-top: 10px !important;
-    }
-
-    .pdf-video-link {
-        display: block !important;
-        position: absolute;
-        inset: 0;
-        z-index: 15;
-    }
-
-    footer {
-        margin-top: 40px !important;
-        padding: 25px 4vw !important;
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
-    }
-}
+/* La stellina del collegamento al portfolio è bianca, a quattro punte. */
+.portfolio-download-link svg { color: #fff; }

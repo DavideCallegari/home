@@ -312,7 +312,7 @@
     }
 
     /* =========================================================
-       4. GRIGLIA FOTOGRAFICA DINAMICA (MASONRY + STAMPA PDF)
+       4. GRIGLIA FOTOGRAFICA DINAMICA (MASONRY)
        ========================================================= */
     const photoGrids = Array.from(document.querySelectorAll('.photo-grid'));
     const gridCaches = new Map();
@@ -422,22 +422,6 @@
         }, 120);
     });
 
-    window.addEventListener('beforeprint', () => {
-        if (currentColsCount !== 3) renderGrids(3);
-        document.querySelectorAll('img[loading="lazy"]').forEach((img) => {
-            img.dataset.restoreLazyLoading = 'true';
-            img.loading = 'eager';
-        });
-    });
-
-    window.addEventListener('afterprint', () => {
-        document.querySelectorAll('img[data-restore-lazy-loading="true"]').forEach((img) => {
-            img.loading = 'lazy';
-            delete img.dataset.restoreLazyLoading;
-        });
-        if (currentColsCount !== 3) renderGrids(currentColsCount);
-    });
-
     /* =========================================================
        5. VIDEO YOUTUBE, REEL INSTAGRAM E FOTO BACKSTAGE
        ========================================================= */
@@ -499,15 +483,12 @@
             iframe.scrolling = 'no';
         }
 
-        // Appenderlo, invece di sostituire tutti i figli, conserva il link PDF
-        // e permette di ripristinare la copertina senza ricreare il markup.
+        // Appenderlo mantiene semplice il ripristino della copertina.
         item.appendChild(iframe);
     }
 
     document.querySelectorAll('.video-item, .reel-item').forEach((item) => {
-        item.addEventListener('click', (e) => {
-            if (!e.target.closest('.pdf-video-link')) activateVideoItem(item);
-        });
+        item.addEventListener('click', () => activateVideoItem(item));
         item.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -662,7 +643,10 @@
             if (token !== activeLoadToken || !isLbOpen) return;
             lbStage.dataset.section = String(getPhotoSection(photoNum));
             lbImg.alt = altText;
+            lbImg.onload = () => lbImg.classList.remove('is-loading');
+            lbImg.onerror = () => lbImg.classList.remove('is-loading');
             lbImg.src = src;
+            if (lbImg.complete && lbImg.naturalWidth > 0) lbImg.classList.remove('is-loading');
         }
 
         // Carica e decodifica direttamente il JPG definitivo. L'immagine attuale
@@ -698,7 +682,10 @@
 
     function openLightbox(num, triggerEl = null, fromUrl = false, fromPopState = false) {
         lastFocusedEl = triggerEl || document.activeElement;
-        if (!isLbOpen) lbImg.removeAttribute('src');
+        if (!isLbOpen) {
+            lbImg.classList.add('is-loading');
+            lbImg.removeAttribute('src');
+        }
         isLbOpen = true;
 
         if (fromUrl) {
