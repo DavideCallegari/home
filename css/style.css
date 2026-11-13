@@ -857,35 +857,41 @@ body::after {
     100% { transform: scale(1) rotate(0deg); }
 }
 
-/* Griglia delle fotografie backstage. */
+/* Fotografie backstage: posizioni indipendenti dall'altezza dei crediti. */
 .bts-layer {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: calc(38px + clamp(220px, calc((92vw - 40px) / 3 * 0.5625), 330px));
     pointer-events: none;
     z-index: 20;
 }
 
 .bts-card {
     position: absolute;
-    width: clamp(115px, 14vw, 210px);
-    background-color: var(--accent-dark);
+    width: clamp(115px, 13vw, 190px);
     padding: 3px;
+    background-color: var(--accent-dark);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.85);
     pointer-events: none;
     opacity: 0;
     visibility: hidden;
     transform: translateY(16px) scale(0.82) rotate(var(--rot, 0deg));
-    transition: opacity var(--dur-med) var(--ease-smooth), transform var(--dur-med) var(--ease-spring), visibility var(--dur-med);
+    transition:
+        opacity var(--dur-med) var(--ease-smooth),
+        transform var(--dur-med) var(--ease-spring),
+        visibility var(--dur-med);
 }
 
 .bts-card::before {
     content: "";
     position: absolute;
     inset: 0;
+    z-index: 2;
     border: 2px solid var(--text-light-pastel);
     filter: url(#hand-ink);
     pointer-events: none;
-    z-index: 2;
 }
 
 .video-strip-wrapper.show-bts .bts-card {
@@ -896,13 +902,14 @@ body::after {
 
 .bts-card picture,
 .bts-card img {
+    display: block;
     width: 100%;
     height: auto;
-    display: block;
 }
 
 .leaning-cat {
     position: absolute;
+    z-index: 3;
     width: 46px;
     height: 46px;
     stroke: #FFFFFF;
@@ -910,7 +917,6 @@ body::after {
     stroke-width: 1.85;
     stroke-linecap: round;
     stroke-linejoin: round;
-    z-index: 3;
 }
 
 .warm-strip .leaning-cat { fill: var(--strip-dark-2); }
@@ -920,13 +926,19 @@ body::after {
 .cat-side-right { bottom: 6px; right: -34px; }
 .cat-side-left { bottom: 6px; left: -34px; transform: scaleX(-1); }
 
-.bts-pos-1 { top: -65px; left: 3%; --rot: -4deg; }
-.bts-pos-2 { top: -75px; left: 29%; --rot: 3deg; }
-.bts-pos-3 { top: -60px; left: 61%; --rot: -2deg; }
-.bts-pos-4 { top: -70px; right: 4%; --rot: 4deg; }
-.bts-pos-5 { bottom: -70px; left: 5%; --rot: 3deg; }
-.bts-pos-6 { bottom: -65px; left: 35%; --rot: -3deg; }
-.bts-pos-7 { bottom: -70px; left: 64%; --rot: 2deg; }
+/* Desktop: collage vicino ai video, con poco sconfinamento laterale. */
+.bts-pos-1 { top: -58px; left: 9.5%; --rot: -4deg; }
+.bts-pos-2 { top: -68px; left: 29%; --rot: 3deg; }
+.bts-pos-3 { top: -55px; left: 56%; --rot: -2deg; }
+.bts-pos-4 { top: -62px; right: 11%; --rot: 4deg; }
+.bts-pos-5 { bottom: -42px; left: 10.5%; --rot: 3deg; }
+.bts-pos-6 { bottom: -12px; left: 36%; --rot: -3deg; }
+.bts-pos-7 {
+    bottom: -12px;
+    left: 70.5%;
+    width: clamp(130px, 15vw, 215px);
+    --rot: 2deg;
+}
 
 /* Lightbox e navigazione delle fotografie. */
 .lightbox-modal {
@@ -1273,6 +1285,21 @@ footer a {
 /* Layout responsive e preferenze di movimento. */
 @media (max-width: 950px) {
     .video-strip { grid-template-columns: 1fr; }
+    .bts-layer { height: calc(3 * (92vw * 0.5625) + 40px); }
+    .bts-card { width: clamp(100px, 17vw, 145px); }
+    .bts-pos-1 { top: -30px; left: 9%; }
+    .bts-pos-2 { top: 24vw; right: 9%; left: auto; }
+    .bts-pos-3 { top: 48vw; left: 38%; }
+    .bts-pos-4 { top: 72vw; right: 9%; left: auto; }
+    .bts-pos-5 { top: 96vw; bottom: auto; left: 9%; }
+    .bts-pos-6 { top: 120vw; right: 9%; bottom: auto; left: auto; }
+    .bts-pos-7 {
+        top: 144vw;
+        right: auto;
+        bottom: auto;
+        left: 34%;
+        width: clamp(110px, 19vw, 155px);
+    }
     .reel-strip { grid-template-columns: repeat(2, 1fr); gap: 24px; }
     .bio-content {
         padding: 20px 10px 10px;
@@ -1304,7 +1331,8 @@ footer a {
     .reel-strip { gap: 14px; padding: 0 3vw; }
     .custom-play-btn { width: 40px; height: 40px; }
     .laurels-row { gap: 18px 24px; padding: 0 55px 0 20px; }
-    .bts-card { width: 100px; }
+    .bts-card { width: clamp(88px, 25vw, 130px); }
+    .bts-pos-7 { width: clamp(100px, 28vw, 145px); }
     .leaning-cat { width: 34px; height: 34px; }
     .footer-left, .footer-right { flex-wrap: wrap; justify-content: center; gap: 16px; }
     .lb-nav-btn { padding: 8px; }
